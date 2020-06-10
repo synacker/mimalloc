@@ -174,16 +174,9 @@ void _mi_os_init() {
 #endif
 
 #if MI_USER_CLEANUP
-static mi_cleanup_fun* user_cleanup = NULL;
-static void* cleanup_udata = NULL;
 static void _mi_call_user_cleanup(void* p, size_t size)
 {
-  if(user_cleanup)
-    user_cleanup(cleanup_udata, p, size);
-#if (MI_DEBUG>1)
-  else
-    memset(p, 0, size);
-#endif
+  mi_user_cleanup(p, size);
 }
 #else
 static void _mi_call_user_cleanup(void* p, size_t size)
@@ -196,16 +189,6 @@ static void _mi_call_user_cleanup(void* p, size_t size)
 #endif
 }
 #endif
-
-void mi_register_user_cleanup(mi_cleanup_fun* cleanup, void* user_data) mi_attr_noexcept
-{
-  (void)cleanup;
-  (void)user_data;
-#if MI_USER_CLEANUP
-  user_cleanup = cleanup;
-  cleanup_udata = user_data;
-#endif
-}
 
 /* -----------------------------------------------------------
   Raw allocation on Windows (VirtualAlloc) and Unix's (mmap).
